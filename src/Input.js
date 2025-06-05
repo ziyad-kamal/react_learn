@@ -1,11 +1,17 @@
-export default function Input({inputValue,setValue,name,inputs}) {
-    function handleInput(e) {
-        setValue({...inputs, [name]: e.target.value });
-    }
-    
+export default function Input({ inputValue, handleChange, name }) {
+    const label = name.replace(/_/g, " ");
+
     return (
-        <div>
-            <input value={inputValue} onChange={handleInput} type="text" />
-        </div>
+        <>
+            <label>{label}</label>
+            <input
+                value={inputValue}
+                onChange={(e) => {
+                    handleChange(e.target.value, name);
+                }}
+                type="text"
+                name={name}
+            />
+        </>
     );
 }

@@ -13,13 +13,13 @@ function App() {
         status: "",
     });
 
-    function changeName() {
+    const changeName = () => {
         if (name === "ziyad") {
             setName("ali");
         } else {
             setName("ziyad");
         }
-    }
+    };
 
     const [tasks, setTasks] = useState([
         { id: 1, title: "task4" },
@@ -39,7 +39,7 @@ function App() {
     function handleEdit(id) {
         let newTasks = tasks.map((task) => {
             if (task.id === id) {
-                return {...task,title:task.title + 'ww'};
+                return { ...task, title: task.title + "ww" };
             }
 
             return task;
@@ -72,13 +72,20 @@ function App() {
         );
     });
 
-    let counter = tasks.length + 1;
+    let [counter, setCounter] = useState(tasks.length + 1);
     function submit(e) {
         e.preventDefault();
 
         setTasks([...tasks, { title: inputs.name, id: counter }]);
-        counter++;
+        setCounter(counter + 1);
+        setCounter((c) => {
+            return c + 1;
+        });
     }
+
+    const handleChange = (value, name) => {
+        setInputs({ ...inputs, [name]: value });
+    };
 
     return (
         <div className="App">
@@ -90,15 +97,13 @@ function App() {
 
             <form onSubmit={submit}>
                 <Input
-                    inputs={inputs}
                     inputValue={inputs.name}
-                    setValue={setInputs}
-                    name={"name"}
+                    handleChange={handleChange}
+                    name='name'
                 />
                 <Input
-                    inputs={inputs}
                     inputValue={inputs.email}
-                    setValue={setInputs}
+                    handleChange={handleChange}
                     name={"email"}
                 />
                 <textarea
