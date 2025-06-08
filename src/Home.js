@@ -1,12 +1,11 @@
-import "./App.css";
 import "./test.css";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useReducer, useState } from "react";
 import { InputContext } from "./InputContext";
 import Custom from "./Custom";
 import { Link } from "react-router";
+import nameReducer from "./nameReducer";
 
 function Home() {
-    const [name, setName] = useState("ziyad");
     const [inputs, setInputs] = useState({
         name: "",
         email: "",
@@ -15,12 +14,15 @@ function Home() {
         status: "",
     });
 
+    const [userName, dispatch] = useReducer(nameReducer, "ziyad");
+
     const changeName = () => {
-        if (name === "ziyad") {
-            setName("ali");
-        } else {
-            setName("ziyad");
-        }
+        dispatch({
+            type: "name",
+            payload: {
+                name: "ww",
+            },
+        });
     };
 
     const [tasks, setTasks] = useState([
@@ -30,53 +32,55 @@ function Home() {
         { id: 4, title: "task7" },
     ]);
 
-    function handleDelete(id) {
-        let newTasks = tasks.filter((task) => {
-            return task.id !== id;
+    const tasksList = useMemo(() => {
+        function handleDelete(id) {
+            let newTasks = tasks.filter((task) => {
+                return task.id !== id;
+            });
+
+            setTasks(newTasks);
+        }
+
+        function handleEdit(id) {
+            let newTasks = tasks.map((task) => {
+                if (task.id === id) {
+                    return { ...task, title: task.title + "ww" };
+                }
+
+                return task;
+            });
+
+            setTasks(newTasks);
+        }
+
+        return tasks.map((task) => {
+            return (
+                <li key={task.id}>
+                    {task.title}
+
+                    <button
+                        onClick={() => {
+                            handleDelete(task.id);
+                        }}
+                    >
+                        delete
+                    </button>
+
+                    <button
+                        onClick={() => {
+                            handleEdit(task.id);
+                        }}
+                    >
+                        edit
+                    </button>
+
+                    <Link to={`/task/${task.id}`}>
+                        <button>show</button>
+                    </Link>
+                </li>
+            );
         });
-
-        setTasks(newTasks);
-    }
-
-    function handleEdit(id) {
-        let newTasks = tasks.map((task) => {
-            if (task.id === id) {
-                return { ...task, title: task.title + "ww" };
-            }
-
-            return task;
-        });
-
-        setTasks(newTasks);
-    }
-
-    const tasksList = tasks.map((task) => {
-        return (
-            <li key={task.id}>
-                {task.title}
-
-                <button
-                    onClick={() => {
-                        handleDelete(task.id);
-                    }}
-                >
-                    delete
-                </button>
-
-                <button
-                    onClick={() => {
-                        handleEdit(task.id);
-                    }}
-                >
-                    edit
-                </button>
-
-                <Link to={`/task/${task.id}`}>
-                    <button>show</button>
-                </Link>
-            </li>
-        );
-    });   
+    }, [tasks]);
 
     let [counter, setCounter] = useState(tasks.length + 1);
 
@@ -84,9 +88,9 @@ function Home() {
         let storedTasks = JSON.parse(localStorage.getItem("tasks"));
         if (storedTasks !== null) {
             setTasks(storedTasks);
-            setCounter(storedTasks.length + 1)
+            setCounter(storedTasks.length + 1);
         }
-    },[]);
+    }, []);
 
     const handleChange = (value, name) => {
         setInputs({ ...inputs, [name]: value });
@@ -106,7 +110,7 @@ function Home() {
 
     return (
         <div>
-            <h4>{name}</h4>
+            <h4>{userName}</h4>
 
             <button onClick={changeName}>click</button>
 
